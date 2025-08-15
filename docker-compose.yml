@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: ./docker/apache
+      dockerfile: Dockerfile
+    container_name: laravel-apache
+    ports:
+      - "8000:8080"
+    volumes:
+      - ./project:/var/www
+    depends_on:
+      - db
+    networks:
+      - laravel
+
+  db:
+    image: mysql:8.0
+    container_name: laravel-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: blogs
+      MYSQL_USER: laravel
+      MYSQL_PASSWORD: secret
+    ports:
+      - "3306:3306"
+    volumes:
+      - dbdata:/var/lib/mysql
+    networks:
+      - laravel
+
+  redis:
+    image: redis:alpine
+    container_name: redis-server
+    ports:
+      - "6379:6379"
+    networks:
+      - laravel
+
+networks:
+  laravel:
+
+volumes:
+  dbdata:
