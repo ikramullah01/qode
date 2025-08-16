@@ -9,5 +9,5 @@ export const useCounterStore = defineStore('counter', {
       this.count++;
     },
   },
-  persist: true, // ✅ enable persistence
+  persist: true, 
 });
