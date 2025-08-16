@@ -50,7 +50,7 @@ class BlogPostController extends Controller
 
             // Update search index in Redis
             $this->updateRedisIndex($post);
-            SendPostPublishedEmail::dispatch($post);
+            SendPostPublishedEmail::dispatch($post)->onQueue('emails');
         }
 
         return response()->json($post, 201);

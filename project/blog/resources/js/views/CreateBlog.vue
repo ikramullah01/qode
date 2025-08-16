@@ -1,48 +1,73 @@
 <template>
     <div class="container my-5">
-        <h2>Create New Blog</h2>
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body p-4">
+                        <h2 class="card-title mb-4 text-center">Create New Blog</h2>
 
-        <form @submit.prevent="submitBlog">
-            <div class="mb-3">
-                <label class="form-label">Title</label>
-                <input v-model="title" type="text" class="form-control" required />
+                        <form @submit.prevent="submitBlog">
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Title</label>
+                                <input v-model="title" type="text" class="form-control form-control-lg"
+                                    placeholder="Enter blog title" required />
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Excerpt</label>
+                                <textarea v-model="excerpt" class="form-control" rows="2"
+                                    placeholder="Write a brief excerpt"></textarea>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Description</label>
+                                <textarea v-model="description" class="form-control" rows="5"
+                                    placeholder="Enter full description" required></textarea>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Keywords (tags)</label>
+                                <input type="text" class="form-control" v-model="keywordsInput"
+                                    placeholder="Laravel, Vue, Pinia" />
+                                <small class="text-muted">Separate multiple keywords with commas</small>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label fw-semibold">Featured Image</label>
+                                <input type="file" @change="handleFileUpload" class="form-control" />
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label fw-semibold">Publishing Date</label>
+                                <Datepicker v-model="publishDate" :enable-time-picker="true" :clearable="true"
+                                    placeholder="Select publishing date & time" class="form-control" />
+                            </div>
+
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary btn-lg" :disabled="submitting">
+                                    <span v-if="submitting" class="spinner-border spinner-border-sm me-2"></span>
+                                    {{ submitting ? "Submitting..." : "Create Blog" }}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
-
-            <div class="mb-3">
-                <label class="form-label">Excerpt</label>
-                <textarea v-model="excerpt" class="form-control" rows="2"></textarea>
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label">Description </label>
-                <textarea v-model="description" class="form-control" rows="5" required></textarea>
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label">Keywords (tags, multiple allowed)</label>
-                <input type="text" class="form-control" v-model="keywordsInput"
-                    placeholder="Enter keywords separated by commas" />
-                <small class="text-muted">Example: Laravel, Vue, Pinia</small>
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label">Image</label>
-                <input type="file" @change="handleFileUpload" class="form-control" />
-            </div>
-
-            <button type="submit" class="btn btn-primary" :disabled="submitting">
-                {{ submitting ? "Submitting..." : "Create Blog" }}
-            </button>
-        </form>
+        </div>
     </div>
 </template>
 
 <script>
 import axios from "axios";
 import { useAuthStore } from "@/store/auth";
+import Datepicker from '@vuepic/vue-datepicker';
+import '@vuepic/vue-datepicker/dist/main.css';
 
 export default {
     name: "CreateBlog",
+    components: {
+        Datepicker, 
+    },
     setup() {
         const auth = useAuthStore();
         return { auth };
@@ -54,10 +79,15 @@ export default {
             description: "",
             keywordsInput: "",
             image: null,
+            publishDate: null,
             submitting: false,
         };
     },
     methods: {
+        formatDate(date) {
+            if (!date) return "";
+            return date.toLocaleString(); // Customize formatting if needed
+        },
         handleFileUpload(event) {
             this.image = event.target.files[0];
         },
@@ -74,6 +104,7 @@ export default {
                 formData.append("excerpt", this.excerpt);
                 formData.append("description", this.description);
                 if (this.image) formData.append("image", this.image);
+                if (this.publishDate) formData.append("published_at", this.publishDate.toISOString());
 
                 const keywordsArray = this.keywordsInput
                     .split(",")
@@ -86,7 +117,7 @@ export default {
 
                 const { data } = await axios.post("/api/blog-posts", formData, {
                     headers: {
-                        "Content-Type": "multipart/form-data",
+                        "Authorization": `Bearer ${this.auth.token}` ,
                     },
                 });
 
@@ -101,9 +132,3 @@ export default {
     },
 };
 </script>
-
-<style scoped>
-textarea {
-    resize: none;
-}
-</style>

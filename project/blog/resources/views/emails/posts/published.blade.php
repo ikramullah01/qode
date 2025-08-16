@@ -5,7 +5,7 @@ Title: {{ $post->title }}
 
 Excerpt: {{ $post->excerpt }}
 
-@component('mail::button', ['url' => url("/posts/{$post->id}")])
+@component('mail::button', ['url' => url("/#/blogs/{$post->id}")])
 View Post
 @endcomponent
 

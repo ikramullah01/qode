@@ -9,8 +9,11 @@
                 to="/blogs/create">
                 Create Blog
             </router-link>
-            <!-- Logout button, only show if user is logged in -->
-            <button v-if="auth.isAuthenticated" class="btn btn-danger ms-3" @click="logoutUser">
+
+            <!-- Logout button -->
+            <button v-if="auth.isAuthenticated" class="btn btn-danger ms-3" @click="logoutUser" :disabled="loggingOut">
+                <span v-if="loggingOut" class="spinner-border spinner-border-sm me-2" role="status"
+                    aria-hidden="true"></span>
                 Logout
             </button>
         </nav>
@@ -25,20 +28,30 @@ import { useAuthStore } from "@/store/auth";
 
 export default {
     name: 'App',
-    setup() {
-        const route = useRoute();
-        const router = useRouter();
-        const auth = useAuthStore();
-
-        const logoutUser = async () => {
-            await auth.logout();
-            router.push({ name: "BlogList" });
+    data() {
+        return {
+            loggingOut: false
         };
-
-        const isActive = (path) => route.path === path;
-
-        return { auth, logoutUser, isActive };
     },
+    computed: {
+        auth() {
+            return useAuthStore();
+        }
+    },
+    methods: {
+        isActive(path) {
+            return this.$route.path === path;
+        },
+        async logoutUser() {
+            this.loggingOut = true;
+            try {
+                await this.auth.logout();
+                this.$router.push({ name: "BlogList" });
+            } finally {
+                this.loggingOut = false;
+            }
+        }
+    }
 };
 </script>
 
