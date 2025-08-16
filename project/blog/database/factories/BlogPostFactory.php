@@ -19,7 +19,7 @@ class BlogPostFactory extends Factory
             'title'            => $this->faker->words(3, true),  
             'excerpt'          => $this->faker->sentence(6), 
             'description'      => $this->faker->paragraphs(2, true),
-            'image'            => $this->faker->imageUrl(640, 480, 'blog', true),
+            'image'            => asset('images/default.jpg'),
             'keywords'         => json_encode($this->faker->words(3)),
             'meta_title'       => $this->faker->words(3, true),  
             'meta_description' => $this->faker->text(30),

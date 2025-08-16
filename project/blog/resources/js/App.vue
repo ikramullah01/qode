@@ -5,7 +5,9 @@
         <nav class="nav nav-pills mb-4">
             <router-link class="nav-link" :class="{ active: isActive('/') }" to="/">Home</router-link>
             <router-link class="nav-link" :class="{ active: isActive('/about') }" to="/about">About</router-link>
+            <router-link class="nav-link" :class="{ active: isActive('/blogs') }" to="/blogs">Blogs</router-link>
         </nav>
+        
 
         <router-view></router-view>
     </div>

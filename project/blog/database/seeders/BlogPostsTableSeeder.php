@@ -14,7 +14,7 @@ class BlogPostsTableSeeder extends Seeder
     {
         $userId = User::first()?->id ?? User::factory()->create()->id;
 
-        $totalPosts = 10;
+        $totalPosts = 2;
         $chunkSize = 5;
 
         for ($i = 0; $i < $totalPosts; $i += $chunkSize) {

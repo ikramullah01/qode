@@ -20,8 +20,8 @@ class EmailOtpController extends Controller
 
         $otp = rand(100000, 999999);
         EmailOtp::create([
-            'user_id' => $user->id,
-            'otp' => $otp,
+            'user_id'    => $user->id,
+            'otp'        => $otp,
             'expires_at' => now()->addMinutes(5),
         ]);
 

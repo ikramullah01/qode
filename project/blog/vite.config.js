@@ -10,6 +10,10 @@ export default defineConfig({
         hmr: {
             host: "localhost", // your machine's host name or IP
         },
+        watch: {
+            usePolling: true,   
+            interval: 100,      // optional, check every 100ms
+        },
     },
     plugins: [
         laravel({

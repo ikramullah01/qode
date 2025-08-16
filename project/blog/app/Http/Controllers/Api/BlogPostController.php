@@ -15,7 +15,7 @@ class BlogPostController extends Controller
 
     public function index()
     {
-        return BlogPost::with('author')->latest()->get();
+        return BlogPost::with('author')->latest()->paginate(9);
     }
 
     public function store(Request $request)
@@ -55,7 +55,7 @@ class BlogPostController extends Controller
 
     public function show(BlogPost $blogPost)
     {
-        return $blogPost->load('author');
+        return $blogPost->load('author','comments','comments.user');
     }
 
     public function update(Request $request, BlogPost $blogPost)
