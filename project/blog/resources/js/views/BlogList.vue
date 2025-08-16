@@ -2,6 +2,24 @@
   <div class="container my-5 blog-list-page">
     <h1 class="mb-4">All Blog Posts</h1>
 
+    <!-- Search bar -->
+    <div class="input-group mb-4 shadow-sm">
+      <input
+        v-model="searchQuery"
+        @keyup.enter="searchPosts"
+        type="text"
+        class="form-control"
+        placeholder="Search blog posts..."
+      />
+      <button
+        class="btn btn-primary"
+        type="button"
+        @click="searchPosts"
+      >
+        Search
+      </button>
+    </div>
+
     <div v-if="posts.length === 0 && loading" class="text-muted">
       Loading posts...
     </div>
@@ -12,28 +30,16 @@
       </div>
 
       <div class="row">
-        <div
-          v-for="post in posts"
-          :key="post.id"
-          class="col-md-6 col-lg-4 mb-4"
-        >
+        <div v-for="post in posts" :key="post.id" class="col-md-6 col-lg-4 mb-4">
           <div class="card h-100 shadow-sm">
-            <img
-              v-if="post.image"
-              :src="post.image"
-              class="card-img-top"
-              alt="Post image"
-            />
+            <img v-if="post.image" :src="post.image" class="card-img-top" alt="Post image" />
             <div class="card-body d-flex flex-column">
               <h5 class="card-title">{{ post.title }}</h5>
               <p class="card-text text-truncate">{{ post.excerpt }}</p>
               <p class="text-muted mb-2">
                 Published: {{ formatDate(post.published_at) }}
               </p>
-              <router-link
-                :to="`/blogs/${post.id}`"
-                class="btn btn-primary mt-auto"
-              >
+              <router-link :to="`/blogs/${post.id}`" class="btn btn-primary mt-auto">
                 Read More
               </router-link>
             </div>
@@ -60,8 +66,8 @@ export default {
       loading: false,
       page: 1,
       lastPage: null,
-      token:
-        "1|WIYM92DZYDHs5rTV0Md2XROvTjdQZQLBNuIWR03a40916e36", // replace with actual token
+      searchQuery: "",
+      
     };
   },
   methods: {
@@ -70,9 +76,7 @@ export default {
 
       this.loading = true;
       try {
-        const response = await axios.get(`/api/blog-posts?page=${this.page}`, {
-          headers: { Authorization: `Bearer ${this.token}` },
-        });
+        const response = await axios.get(`/api/blog-posts?page=${this.page}`);
 
         this.posts.push(...response.data.data);
         this.lastPage = response.data.last_page;
@@ -83,10 +87,20 @@ export default {
         this.loading = false;
       }
     },
-    handleScroll() {
-      // Debug to confirm event is firing
-      console.log("scrolling...");
+    async searchPosts() {
+      try {
+        const response = await axios.get(`/api/blog-posts/search`, {
+          params: { q: this.searchQuery },
+        });
 
+        this.posts = response.data;
+      } catch (error) {
+        console.error("Failed to fetch blog posts:", error);
+      } finally {
+        this.loading = false;
+      }
+    },
+    handleScroll() {
       const bottomOfWindow =
         window.innerHeight + window.scrollY >=
         document.documentElement.offsetHeight - 100;
@@ -111,7 +125,8 @@ export default {
 
 <style scoped>
 .blog-list-page {
-  min-height: 200vh; /* force scroll space for testing */
+  min-height: 200vh;
+  /* force scroll space for testing */
 }
 
 .card-text {

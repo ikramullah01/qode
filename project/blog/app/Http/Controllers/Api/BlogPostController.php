@@ -32,7 +32,10 @@ class BlogPostController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            $data['image'] = $request->file('image')->store('blog_images', 'public');
+            $image      = $request->file('image');
+            $imageName  = time() . '_' . $image->getClientOriginalName();
+            $image->move(public_path('images'), $imageName);
+            $data['image'] = 'images/' . $imageName;
         }
 
         $data['author_id'] = $request->user()->id;
@@ -55,7 +58,7 @@ class BlogPostController extends Controller
 
     public function show(BlogPost $blogPost)
     {
-        return $blogPost->load('author','comments','comments.user');
+        return $blogPost->load('author', 'comments', 'comments.user');
     }
 
     public function update(Request $request, BlogPost $blogPost)

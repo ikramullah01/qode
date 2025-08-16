@@ -20,19 +20,14 @@
             <ul class="list-group mb-4">
                 <li v-for="comment in post.comments" :key="comment.id" class="list-group-item">
                     <div v-html="renderMarkdown(comment.content)"></div>
-                    <small class="text-muted">  Posted by: {{ comment.user.name }}  </small>
-                    <small class="text-muted">  Posted: {{ formatDate(comment.created_at) }}</small>
+                    <small class="text-muted"> Posted by: {{ comment.user.name }} </small>
+                    <small class="text-muted"> Posted: {{ formatDate(comment.created_at) }}</small>
                 </li>
             </ul>
 
-            <div class="mb-5">
-                <h5>Add a Comment</h5>
-                <textarea v-model="newComment" class="form-control mb-2" rows="3"
-                    placeholder="Write your comment here..."></textarea>
-                <button class="btn btn-primary" @click="submitComment" :disabled="commenting">
-                    {{ commenting ? "Posting..." : "Post Comment" }}
-                </button>
-            </div>
+            <!-- Use AddComment component -->
+            <AddComment v-if="auth.isAuthenticated" :postId="post.id" :token="token" @comment-added="handleNewComment" />
+            <p v-else class="text-muted">Please log in to add a comment.</p>
         </div>
     </div>
 </template>
@@ -40,9 +35,16 @@
 <script>
 import axios from "axios";
 import { marked } from "marked";
+import AddComment from "./AddComment.vue";
+import { useAuthStore } from "@/store/auth";
 
 export default {
     name: "BlogDetail",
+    components: { AddComment },
+    setup() {
+        const auth = useAuthStore(); // Pinia store
+        return { auth };
+    },
     data() {
         return {
             post: null,
@@ -62,9 +64,7 @@ export default {
         async fetchPost() {
             this.loading = true;
             try {
-                const response = await axios.get(`/api/blog-posts/${this.$route.params.id}`, {
-                    headers: { Authorization: `Bearer ${this.token}` },
-                });
+                const response = await axios.get(`/api/blog-posts/${this.$route.params.id}`);
                 this.post = response.data;
             } catch (error) {
                 console.error("Failed to fetch post:", error);
@@ -77,6 +77,9 @@ export default {
         },
         renderMarkdown(content) {
             return marked(content); // ✅ convert markdown to HTML
+        },
+        handleNewComment(comment) {
+            this.post.comments.push(comment); // add new comment to post
         },
         async submitComment() {
             if (!this.newComment.trim()) return;

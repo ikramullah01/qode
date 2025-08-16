@@ -24,6 +24,7 @@ class CommentController extends Controller
             'user_id' => $request->user()->id,
             'content' => $request->input('content'),
         ]);
+        $comment->load('user'); // eager load the user relation
 
         // Increment comment count in Redis
         Redis::incr("blog_post:{$post->id}:comment_count");

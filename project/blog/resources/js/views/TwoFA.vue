@@ -1,4 +1,3 @@
-<!-- views/TwoFA.vue -->
 <template>
     <div class="container mt-5">
         <div class="row justify-content-center">
@@ -11,7 +10,14 @@
                                 <label for="code" class="form-label">Enter OTP Code</label>
                                 <input v-model="code" type="text" class="form-control" id="code" required />
                             </div>
-                            <button type="submit" class="btn btn-success w-100">Verify</button>
+                            <button 
+                                type="submit" 
+                                class="btn btn-success w-100" 
+                                :disabled="loading"
+                            >
+                                <span v-if="loading" class="spinner-border spinner-border-sm me-2" role="status"></span>
+                                Verify
+                            </button>
                         </form>
                         <p v-if="error" class="text-danger mt-3">{{ error }}</p>
                     </div>
@@ -29,6 +35,7 @@ export default {
         return {
             code: "",
             error: "",
+            loading: false, // new loading state
         };
     },
     computed: {
@@ -40,11 +47,14 @@ export default {
         async verifyCode() {
             const auth = useAuthStore();
             this.error = "";
+            this.loading = true; // start spinner / disable button
             try {
                 await auth.verifyTwoFA(this.email, this.code);
                 this.$router.push({ name: "Home" });
             } catch (e) {
                 this.error = e.response?.data?.message || "Invalid OTP code";
+            } finally {
+                this.loading = false; // stop spinner / enable button
             }
         },
     },

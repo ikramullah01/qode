@@ -14,15 +14,17 @@ Route::post('otp/verify', [EmailOtpController::class, 'verifyOtp']);
 Route::get('blog-posts/{post}/comments', [CommentController::class, 'index']);
 
 // Protected routes
-Route::middleware('auth:sanctum')->group(function () {
-    // Get logged-in user
-    Route::get('user', fn (Request $request) => response()->json($request->user()))
-        ->name('user');
-
-    // Blog posts
-    Route::get('blog-posts/search', [BlogPostController::class, 'searchPost']);
-    Route::apiResource('blog-posts', BlogPostController::class);
+Route::middleware('auth:sanctum')->group(function () {   
+    Route::post('blog-posts', [BlogPostController::class, 'store']);
+    Route::put('blog-posts/{blogPost}', [BlogPostController::class, 'update']);
+    Route::delete('blog-posts/{blogPost}', [BlogPostController::class, 'destroy']);
 
     // Add comment to a blog post
     Route::post('blog-posts/{post}/comments', [CommentController::class, 'store']);
+    Route::post('logout', [EmailOtpController::class, 'logout']);
 });
+
+// public Blog posts routes
+Route::get('blog-posts/search', [BlogPostController::class, 'searchPost']);
+Route::get('blog-posts', [BlogPostController::class, 'index']);
+Route::get('blog-posts/{blogPost}', [BlogPostController::class, 'show']);

@@ -16,7 +16,7 @@ class EmailOtpController extends Controller
         $request->validate(['email' => 'required|email']);
 
         $user = User::firstOrCreate(['email' => $request->email]);
-        
+
 
         $otp = rand(100000, 999999);
         EmailOtp::create([
@@ -60,5 +60,11 @@ class EmailOtpController extends Controller
             'token' => $token,
             'user' => $user
         ]);
+    }
+
+    public function logout(Request $request)
+    {
+        $request->user()->currentAccessToken()->delete(); // for Sanctum token
+        return response()->json(['message' => 'Logged out successfully']);
     }
 }

@@ -20,7 +20,12 @@ export const useAuthStore = defineStore("auth", {
             this.token = data.token;
             axios.defaults.headers.common["Authorization"] = `Bearer ${this.token}`;
         },
-        logout() {
+        async logout() {
+            try {
+                await axios.post("/api/logout"); 
+            } catch (error) {
+                console.error("Logout failed on server:", error);
+            }
             this.user = null;
             this.token = null;
             delete axios.defaults.headers.common["Authorization"];
