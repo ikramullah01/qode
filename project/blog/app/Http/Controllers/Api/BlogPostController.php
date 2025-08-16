@@ -21,14 +21,14 @@ class BlogPostController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'title' => 'required|string|max:255',
-            'excerpt' => 'required|string',
-            'description' => 'required|string',
-            'image' => 'nullable|image|max:2048',
-            'keywords' => 'nullable|array',
-            'meta_title' => 'nullable|string|max:255',
+            'title'            => 'required|string|max:255',
+            'excerpt'          => 'required|string',
+            'description'      => 'required|string',
+            'image'            => 'nullable|image|max:2048',
+            'keywords'         => 'nullable|array',
+            'meta_title'       => 'nullable|string|max:255',
             'meta_description' => 'nullable|string|max:255',
-            'published_at' => 'nullable|date',
+            'published_at'     => 'nullable|date',
         ]);
 
         if ($request->hasFile('image')) {
@@ -61,14 +61,14 @@ class BlogPostController extends Controller
     public function update(Request $request, BlogPost $blogPost)
     {
         $data = $request->validate([
-            'title' => 'sometimes|string|max:255',
-            'excerpt' => 'sometimes|string',
-            'description' => 'sometimes|string',
-            'image' => 'sometimes|image|max:2048',
-            'keywords' => 'nullable|array',
-            'meta_title' => 'nullable|string|max:255',
+            'title'            => 'sometimes|string|max:255',
+            'excerpt'          => 'sometimes|string',
+            'description'      => 'sometimes|string',
+            'image'            => 'sometimes|image|max:2048',
+            'keywords'         => 'nullable|array',
+            'meta_title'       => 'nullable|string|max:255',
             'meta_description' => 'nullable|string|max:255',
-            'published_at' => 'nullable|date',
+            'published_at'     => 'nullable|date',
         ]);
 
         if ($request->hasFile('image')) {
@@ -99,17 +99,33 @@ class BlogPostController extends Controller
     {
         $query = strtolower($request->input('q'));
         $ids = Redis::smembers('blog_post_index');
+        rsort($ids);
 
         $results = [];
         foreach ($ids as $id) {
             $postData = Redis::get("blog_post:{$id}");
             if ($postData) {
                 $post = json_decode($postData, true);
-                if (
-                    str_contains(strtolower($post['title']), $query) ||
-                    str_contains(strtolower($post['excerpt']), $query) ||
-                    str_contains(strtolower($post['description'] ?? ''), $query)
-                ) {
+                // Check title, excerpt , description, or keywords
+                $matches = false;
+                // dd($post['title']);
+                if (str_contains(strtolower($post['title']), $query) !== false) {
+                    $matches = true;
+                    // dd($post);
+                } elseif (str_contains(strtolower($post['excerpt']), $query) !== false) {
+                    $matches = true;
+                } elseif (str_contains(strtolower($post['description']), $query) !== false) {
+                    $matches = true;
+                } elseif (!empty($post['keywords'])) {
+                    foreach ($post['keywords'] as $keyword) {
+                        if (str_contains(strtolower($keyword), $query) !== false) {
+                            $matches = true;
+                            break;
+                        }
+                    }
+                }
+
+                if ($matches) {
                     $results[] = $post;
                 }
             }
