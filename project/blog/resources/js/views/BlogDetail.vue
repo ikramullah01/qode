@@ -12,6 +12,13 @@
                 <p class="text-muted mb-0">Published: {{ formatDate(post.published_at) }}</p>
             </div>
 
+            <div v-if="auth.isAuthenticated">
+                <button class="btn btn-danger" @click="deletePost" :disabled="deleting">
+                    <span v-if="deleting" class="spinner-border spinner-border-sm me-2" role="status"></span>
+                    Delete
+                </button>
+            </div>
+
             <!-- Keywords -->
             <div v-if="post.keywords && post.keywords.length" class="mb-3">
                 <span v-for="(keyword, index) in post.keywords" :key="index" class="badge bg-primary me-2">
@@ -80,6 +87,7 @@ export default {
         return {
             post: null,
             loading: true,
+            deleting: false,
             token: "",
         };
     },
@@ -100,6 +108,24 @@ export default {
                 this.loading = false;
             }
         },
+        async deletePost() {
+            if (!confirm("Are you sure you want to delete this post?")) return;
+
+            this.deleting = true;
+            try {
+                await axios.delete(`/api/blog-posts/${this.post.id}`, {
+                    headers: {
+                        Authorization: `Bearer ${this.token}`,
+                    },
+                });
+                this.$router.push({ name: "BlogList" }); // redirect to BlogList component
+            } catch (error) {
+                console.error("Failed to delete post:", error);
+                alert("Failed to delete post. Try again.");
+            } finally {
+                this.deleting = false;
+            }
+        },
         formatDate(dateStr) {
             return new Date(dateStr).toLocaleString();
         },
@@ -111,6 +137,7 @@ export default {
         },
     },
     mounted() {
+        this.token = this.auth.token;
         this.fetchPost();
     },
 };

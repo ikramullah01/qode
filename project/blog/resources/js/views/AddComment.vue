@@ -66,7 +66,7 @@ export default {
 </script>
 
 <style scoped>
-div[ v-html] {
+div[v-html] {
     background: #f8f9fa;
     min-height: 50px;
     white-space: pre-wrap;
