@@ -4,6 +4,7 @@ import Home from "../views/Home.vue";
 import About from "../views/About.vue";
 import BlogList from "../views/BlogList.vue";
 import BlogDetail from "../views/BlogDetail.vue";
+import Register from "@/views/Register.vue";
 import Login from "../views/Login.vue";
 import TwoFA from "../views/TwoFA.vue";
 import CreateBlog from "@/views/CreateBlog.vue";
@@ -19,6 +20,7 @@ const routes = [
         component: BlogDetail,
         props: true,
     },
+    { path: "/register", name: "Register", component: Register },
     { path: "/login", name: "Login", component: Login },
     { path: "/verify-otp", name: "TwoFA", component: TwoFA },
     {

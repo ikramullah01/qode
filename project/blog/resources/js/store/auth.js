@@ -12,23 +12,32 @@ export const useAuthStore = defineStore("auth", {
     },
     actions: {
         async requestLogin(email) {
-            await axios.post("/api/otp/request", { email:email });
+            await axios.post("/api/otp/request", { email: email });
         },
         async verifyTwoFA(email, otp) {
-            const { data } = await axios.post("/api/otp/verify", { email, otp });
+            const { data } = await axios.post("/api/otp/verify", {
+                email,
+                otp,
+            });
             this.user = data.user;
-            this.token = data.token;
-            axios.defaults.headers.common["Authorization"] = `Bearer ${this.token}`;
+            this.token = data.token;            
         },
         async logout() {
             try {
-                await axios.post("/api/logout"); 
+                await axios.post(
+                    "/api/logout",
+                    {},
+                    {
+                        headers: {
+                            Authorization: `Bearer ${this.token}`,
+                        },
+                    }
+                );
             } catch (error) {
                 console.error("Logout failed on server:", error);
             }
             this.user = null;
             this.token = null;
-            delete axios.defaults.headers.common["Authorization"];
         },
     },
     persist: true,

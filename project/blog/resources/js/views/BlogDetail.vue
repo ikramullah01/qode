@@ -6,17 +6,19 @@
         </div>
 
         <div v-else>
-            <!-- Blog Header -->
-            <div class="mb-4">
-                <h1 class="display-5 fw-bold">{{ post.title }}</h1>
-                <p class="text-muted mb-0">Published: {{ formatDate(post.published_at) }}</p>
-            </div>
-
-            <div v-if="auth.isAuthenticated">
-                <button class="btn btn-danger" @click="deletePost" :disabled="deleting">
-                    <span v-if="deleting" class="spinner-border spinner-border-sm me-2" role="status"></span>
-                    Delete
-                </button>
+            <!-- Blog Header with Delete Button -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="display-5 fw-bold mb-1">{{ post.title }}</h1>
+                    <p class="text-muted mb-0">Published: {{ formatDate(post.published_at) }}</p>
+                </div>
+                <div v-if="auth.isAuthenticated">
+                    <button class="btn btn-outline-danger d-flex align-items-center" @click="deletePost"
+                        :disabled="deleting">
+                        <span v-if="deleting" class="spinner-border spinner-border-sm me-2" role="status"></span>
+                        Delete
+                    </button>
+                </div>
             </div>
 
             <!-- Keywords -->
@@ -69,6 +71,7 @@
         </div>
     </div>
 </template>
+
 
 <script>
 import axios from "axios";

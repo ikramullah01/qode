@@ -16,7 +16,7 @@
                             <div class="mb-3">
                                 <label class="form-label fw-semibold">Excerpt</label>
                                 <textarea v-model="excerpt" class="form-control" rows="2"
-                                    placeholder="Write a brief excerpt"></textarea>
+                                    placeholder="Write a brief excerpt" required></textarea>
                             </div>
 
                             <div class="mb-3">
@@ -43,6 +43,9 @@
                                     placeholder="Select publishing date & time" class="form-control" />
                             </div>
 
+                            <!-- Error Message -->
+                            <div v-if="error" class="alert alert-danger">{{ error }}</div>
+
                             <div class="d-grid">
                                 <button type="submit" class="btn btn-primary btn-lg" :disabled="submitting">
                                     <span v-if="submitting" class="spinner-border spinner-border-sm me-2"></span>
@@ -66,7 +69,7 @@ import '@vuepic/vue-datepicker/dist/main.css';
 export default {
     name: "CreateBlog",
     components: {
-        Datepicker, 
+        Datepicker,
     },
     setup() {
         const auth = useAuthStore();
@@ -81,6 +84,7 @@ export default {
             image: null,
             publishDate: null,
             submitting: false,
+            error: null,
         };
     },
     methods: {
@@ -98,6 +102,7 @@ export default {
             }
 
             this.submitting = true;
+            this.error = null;
             try {
                 const formData = new FormData();
                 formData.append("title", this.title);
@@ -117,14 +122,19 @@ export default {
 
                 const { data } = await axios.post("/api/blog-posts", formData, {
                     headers: {
-                        "Authorization": `Bearer ${this.auth.token}` ,
+                        "Authorization": `Bearer ${this.auth.token}`,
                     },
                 });
 
                 // Redirect to the blog detail page
                 this.$router.push({ name: "BlogDetail", params: { id: data.id } });
             } catch (error) {
-                console.error("Failed to create blog:", error);
+                if (error.response?.status === 422) {
+                    // validation error
+                    this.error = error.response.data.message || "The data is not valid.";
+                } else {
+                    this.error = "Something went wrong. Try again.";
+                }
             } finally {
                 this.submitting = false;
             }

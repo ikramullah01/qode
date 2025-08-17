@@ -62,6 +62,34 @@ class EmailOtpController extends Controller
         ]);
     }
 
+    public function register(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|unique:users',
+        ]);
+
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => bcrypt("password"),
+        ]);
+
+        $otp = rand(100000, 999999);
+        EmailOtp::create([
+            'user_id'    => $user->id,
+            'otp'        => $otp,
+            'expires_at' => now()->addMinutes(5),
+        ]);
+
+        Mail::raw("Your login OTP is: {$otp}", function ($message) use ($user) {
+            $message->to($user->email)->subject('Your Login OTP');
+        });
+
+        return response()->json(['message' => 'User Created and OTP sent successfully']);
+    }
+
+
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete(); // for Sanctum token

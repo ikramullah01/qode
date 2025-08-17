@@ -4,7 +4,16 @@
 
         <nav class="nav nav-pills mb-4">
             <router-link class="nav-link" :class="{ active: isActive('/blogs') }" to="/blogs">Blogs</router-link>
+
+            <!-- Show Login and Register only when NOT authenticated -->
             <router-link v-if="!auth.isAuthenticated" class="nav-link ms-3" :class="{ active: isActive('/login') }" to="/login">Login</router-link>
+
+            <router-link v-if="!auth.isAuthenticated" class="nav-link ms-3" :class="{ active: isActive('/register') }"
+                to="/register">
+                Register
+            </router-link>
+
+            <!-- Show Create Blog when authenticated -->
             <router-link v-if="auth.isAuthenticated" class="nav-link" :class="{ active: isActive('/blogs/create') }"
                 to="/blogs/create">
                 Create Blog
@@ -12,8 +21,8 @@
 
             <!-- Logout button -->
             <button v-if="auth.isAuthenticated" class="btn btn-danger ms-3" @click="logoutUser" :disabled="loggingOut">
-                <span v-if="loggingOut" class="spinner-border spinner-border-sm me-2" role="status"
-                    aria-hidden="true"></span>
+                <span v-if="loggingOut" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true">
+                </span>
                 Logout
             </button>
         </nav>
@@ -23,7 +32,6 @@
 </template>
 
 <script>
-import { useRoute, useRouter } from 'vue-router';
 import { useAuthStore } from "@/store/auth";
 
 export default {

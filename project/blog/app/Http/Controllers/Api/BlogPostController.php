@@ -15,7 +15,7 @@ class BlogPostController extends Controller
 
     public function index()
     {
-        return BlogPost::with('author')->latest()->paginate(9);
+        return BlogPost::with('author')->where('published_at', '<=', now())->latest()->paginate(9);
     }
 
     public function store(Request $request)
@@ -24,11 +24,11 @@ class BlogPostController extends Controller
             'title'            => 'required|string|max:255',
             'excerpt'          => 'required|string',
             'description'      => 'required|string',
-            'image'            => 'nullable|image|max:2048',
-            'keywords'         => 'nullable|array',
+            'image'            => 'required|image|max:2048',
+            'keywords'         => 'required|array',
             'meta_title'       => 'nullable|string|max:255',
             'meta_description' => 'nullable|string|max:255',
-            'published_at'     => 'nullable|date',
+            'published_at'     => 'required|date',
         ]);
 
         if ($request->hasFile('image')) {
@@ -39,6 +39,8 @@ class BlogPostController extends Controller
         }
 
         $data['author_id'] = $request->user()->id;
+        $data['meta_title'] = $request->title;              //store title and description as meta for now
+        $data['meta_description'] = $request->description;
 
         $post = BlogPost::create($data);
 
@@ -105,6 +107,7 @@ class BlogPostController extends Controller
         rsort($ids);
 
         $results = [];
+        $maxResults = 50; // only return 50 posts
         foreach ($ids as $id) {
             $postData = Redis::get("blog_post:{$id}");
             if ($postData) {
@@ -130,6 +133,9 @@ class BlogPostController extends Controller
 
                 if ($matches) {
                     $results[] = $post;
+                    if (count($results) >= $maxResults) {
+                        break; // stop once we have 50 results
+                    }
                 }
             }
         }

@@ -9,12 +9,15 @@ use App\Http\Controllers\Api\CommentController;
 // Public OTP endpoints
 Route::post('otp/request', [EmailOtpController::class, 'sendOtp']);
 Route::post('otp/verify', [EmailOtpController::class, 'verifyOtp']);
+// Public register api
+Route::post('register', [EmailOtpController::class, 'register']);
+
 
 // Public comments listing for a blog post
 Route::get('blog-posts/{post}/comments', [CommentController::class, 'index']);
 
 // Protected routes
-Route::middleware('auth:sanctum')->group(function () {   
+Route::middleware('auth:sanctum')->group(function () {
     Route::post('blog-posts', [BlogPostController::class, 'store']);
     Route::put('blog-posts/{blogPost}', [BlogPostController::class, 'update']);
     Route::delete('blog-posts/{blogPost}', [BlogPostController::class, 'destroy']);

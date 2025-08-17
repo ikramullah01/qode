@@ -3,7 +3,7 @@
     <h1 class="mb-4 text-center fw-bold">All Blog Posts</h1>
 
     <!-- Search bar -->
-    <div class="input-group mb-5 shadow-sm rounded-pill overflow-hidden">
+    <div class="input-group mb-5 shadow-sm rounded-pill overflow-hidden w-75 mx-auto">
       <input v-model="searchQuery" @keyup.enter="searchPosts" type="text" class="form-control border-0"
         placeholder="Search blog posts..." :disabled="searching" />
       <button class="btn btn-primary px-4 d-flex align-items-center justify-content-center" type="button"
