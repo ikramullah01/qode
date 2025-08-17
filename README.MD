@@ -6,16 +6,15 @@ This is a full-featured blog application built with **Laravel** (backend) and **
 
 ## Table of Contents
 
+
 1. [Features](#features)  
 2. [Prerequisites](#prerequisites)  
 3. [Setup Instructions](#setup-instructions)  
-4. [Running the Project](#running-the-project)  
-5. [Database & Seeding](#database--seeding)  
-6. [Queue & Email Notifications](#queue--email-notifications)  
-7. [Redis Caching](#redis-caching)  
-8. [Frontend Features](#frontend-features)  
-9. [Docker Services](#docker-services)  
-10. [System Requirements](#system-requirements)
+4. [User Authentication](#4-user-authentication)  
+7. [Frontend Features](#5-frontend)  
+6. [Redis Caching](#6-caching-with-redis)  
+5. [Queue & Email Notifications](#7-queues--email-notifications)  
+8. [Docker Services](#8-dockerization)
 
 ---
 
@@ -117,6 +116,7 @@ docker exec -it app bash
 Navigate to the Blogs project folder and run the following commands:
 ```bash
 cd blog
+cp .env.example .env
 composer install
 npm install
 npm run build

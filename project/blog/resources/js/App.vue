@@ -1,6 +1,7 @@
 <template>
     <div class="container mt-4">
-        <h1 class="mb-4">Laravel + Vue + Pinia + Bootstrap + Redis</h1>
+        <h1 class="mb-4">Qode Blogs App</h1>
+        <h5 class="mb-4">Laravel + Vue + Pinia + Bootstrap + Redis</h5>
 
         <nav class="nav nav-pills mb-4">
             <router-link class="nav-link" :class="{ active: isActive('/blogs') }" to="/blogs">Blogs</router-link>
